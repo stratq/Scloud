@@ -1,20 +1,49 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import sklearn.datasets as ds
+import math as m
 
-DS = ds.load_boston()
-X = DS.data
-Y = DS.target
 
-X = np.concatenate([np.ones((X.shape[0],1)), X], axis=1)
+def func(x):
+    return 1 / (1 + m.exp(-x))
 
-result = np.linalg.solve(X.T.dot(X), X.T.dot(Y))
+l = 100
 
-Y_predict = X.dot(result)
+iris = ds.load_iris()
+x = iris.data[:l,1:3]
+y = iris.target[:l] * 2 - 1
 
-R2 = 1 - ((Y - Y_predict)**2).sum() / ((Y - Y.mean())**2).sum()
-print("R2: ", R2)
+x = np.array(x)
+y = np.array(y)
 
-plt.scatter(Y, Y_predict)
-plt.plot([Y.min(), Y.max()], [Y.min(), Y.max()], c='r')
+x = np.concatenate([np.ones((x.shape[0],1)), x], axis=1)
+
+W = np.zeros(3)
+
+l = y.shape[0]
+
+n = 0.01
+
+for i in range(2000):
+    for j in range(3):
+      sum=0
+      for k in range(l):
+          sum += x[k,j] * y[k] *func(-y[k] * W.dot(x[k]))
+      W[j] = W[j] + n * (1 / l) * sum
+
+predskazanie = x.dot(W)
+
+for i in range(l):
+  sum += 1 if predskazanie[i] == y[i] else -1
+sum*=-1
+print('Точность = ',sum/l)
+
+red = x[y > 0]
+blue = x[y <= 0]
+
+x2 = (-W[0] - W[1] * x) / W[2]
+
+plt.scatter(red[:,1], red[:,2], color="red")
+plt.scatter(blue[:,1], blue[:,2], color="blue")
+plt.plot(x, x2, color="green")
 plt.show()

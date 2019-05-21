@@ -1,29 +1,21 @@
 import numpy as np
-import numpy.linalg as li
-import scipy.integrate as itg
-import sympy as sp
-import math as m
 import matplotlib.pyplot as plt
-import pandas as pd
+import sklearn.datasets as ds
 
-DD = pd.read_csv("haberman.csv")
-print(DD)
 
-X = DD.values[:,:3]
-Y = DD.values[:,3:]-1
+DS = ds.load_boston()
+X = DS.data
+Y = DS.target
 
-X_mean = X.mean()
-X2_mean = (X * X).mean()
-Y_mean = Y.mean()
-XY_mean = (X * Y).mean()
+X = np.concatenate([np.ones((X.shape[0],1)), X], axis=1)
 
-denominator = X2_mean - X_mean**2
-a = (XY_mean - X_mean * Y_mean) / denominator
-b = (Y_mean * X2_mean - X_mean * XY_mean) / denominator
+result = np.linalg.solve(X.T.dot(X), X.T.dot(Y))
 
-Y_predict = a*X+b
-print(Y_predict)
+Y_predict = X.dot(result)
 
-plt.scatter(X, Y, color="red")
-plt.plot(X, Y_predict, color="blue")
+R2 = 1 - ((Y - Y_predict)**2).sum() / ((Y - Y.mean())**2).sum()
+print("R2: ", R2)
+
+plt.scatter(Y, Y_predict)
+plt.plot([Y.min(), Y.max()], [Y.min(), Y.max()], c='r')
 plt.show()

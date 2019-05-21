@@ -1,5 +1,5 @@
 import numpy as np
-import sys
+
 
 class PartyNN():
     def __init__(self, learning_rate):
@@ -51,19 +51,15 @@ learning_rate = 0.7
 N = PartyNN(learning_rate = learning_rate)
 
 for e in range(epochs):
-    _data = []
-    _answers = []
+    left = []
+    right = []
     for data, excepted in train:
         N.train(np.array(data), excepted)
-        _data.append(np.array(data))
-        _answers.append(np.array(excepted))
+        left.append(np.array(data))
+        right.append(np.array(excepted))
 
-    train_loss = MSE(N.predict(np.array(_data)).T, np.array(_answers))
-    print(train_loss)
-
-print("results:")
-for data, excepted in train:
-    print(N.predict(np.array(data)), "~", excepted)
+    loss = MSE(N.predict(np.array(left)).T, np.array(right))
+print(loss)
 
 print("weights:")
 print(N.weight_1)

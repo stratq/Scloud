@@ -10,7 +10,6 @@ DD = pd.read_csv("diet_data.csv")
 del DD ['Date']
 del DD ['change']
 del DD ['cals_per_oz']
-print(DD)
 
 x = DD.values[:,:6]
 y = DD.values[:,6:]
